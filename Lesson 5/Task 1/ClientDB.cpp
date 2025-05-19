@@ -87,11 +87,10 @@ namespace ak
 	{
 		std::string str1{
 			"INSERT INTO client(first_name, last_name, email) "
-			"VALUES('" + client.firstName + "', '" + client.lastName +
-			"', '" + client.email + "');" };
+			"VALUES($1, $2, $3);" };
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
-		upWork_->exec(str1);
+		upWork_->exec(str1, pqxx::params{ client.firstName, client.lastName, client.email });
 		upWork_->commit();
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
@@ -99,9 +98,9 @@ namespace ak
 		{
 			std::string str2{
 				"INSERT INTO phone(number) "
-				"VALUES('" + phone + "');" };
+				"VALUES($1);" };
 
-			upWork_->exec(str2);
+			upWork_->exec(str2, pqxx::params{ phone });
 		}
 		upWork_->commit();
 
@@ -112,12 +111,11 @@ namespace ak
 				"INSERT INTO client_phone(client_id, phone_id) "
 				"VALUES("
 				"(SELECT id FROM client "
-				"WHERE first_name = '" + client.firstName + "' AND last_name = '" + client.lastName +
-				"'), "
+				"WHERE first_name = $1 AND last_name = $2), "
 				"(SELECT id FROM phone "
-				"WHERE number = '" + phone + "'));" };
+				"WHERE number = $3));" };
 
-			upWork_->exec(str3);
+			upWork_->exec(str3, pqxx::params{ client.firstName, client.lastName, phone });
 		}
 		upWork_->commit();
 	}
@@ -130,20 +128,18 @@ namespace ak
 			"DELETE FROM client_phone "
 			"WHERE client_id = "
 			"(SELECT id FROM client "
-			"WHERE first_name = '" + firstName + "' AND last_name = '" + lastName +
-			"');" };
+			"WHERE first_name = $1 AND last_name = $2);" };
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
-		upWork_->exec(str1);
+		upWork_->exec(str1, pqxx::params{ firstName, lastName });
 		upWork_->commit();
 
 		std::string str2{
 			"DELETE FROM client "
-			"WHERE first_name = '" + firstName + "' AND last_name = '" + lastName +
-			"';" };
+			"WHERE first_name = $1 AND last_name = $2;" };
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
-		upWork_->exec(str2);
+		upWork_->exec(str2, pqxx::params{ firstName, lastName });
 		upWork_->commit();
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
@@ -151,9 +147,9 @@ namespace ak
 		{
 			std::string str3{
 				"DELETE FROM phone "
-				"WHERE number = '" + phone + "';" };
+				"WHERE number = $1;" };
 
-			upWork_->exec(str3);
+			upWork_->exec(str3, pqxx::params{ phone });
 		}
 		upWork_->commit();
 	}
@@ -162,12 +158,11 @@ namespace ak
 	{
 		std::string str1{
 			"UPDATE client "
-			"SET email = '" + email + "' "
-			"WHERE first_name = '" + firstName + "' AND last_name = '" + lastName +
-			"';" };
+			"SET email = $1 "
+			"WHERE first_name = $2 AND last_name = $3;" };
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
-		upWork_->exec(str1);
+		upWork_->exec(str1, pqxx::params{ email, firstName, lastName });
 		upWork_->commit();
 	}
 
@@ -175,10 +170,10 @@ namespace ak
 	{
 		std::string str1{
 			"INSERT INTO phone(number) "
-			"VALUES('" + phone + "');" };
+			"VALUES($1);" };
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
-		upWork_->exec(str1);
+		upWork_->exec(str1, pqxx::params{ phone });
 		upWork_->commit();
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
@@ -186,12 +181,11 @@ namespace ak
 			"INSERT INTO client_phone(client_id, phone_id) "
 			"VALUES("
 			"(SELECT id FROM client "
-			"WHERE first_name = '" + firstName + "' AND last_name = '" + lastName +
-			"'), "
+			"WHERE first_name = $1 AND last_name = $2), "
 			"(SELECT id FROM phone "
-			"WHERE number = '" + phone + "'));" };
+			"WHERE number = $3));" };
 
-		upWork_->exec(str2);
+		upWork_->exec(str2, pqxx::params{ firstName, lastName, phone });
 		upWork_->commit();
 	}
 
@@ -201,19 +195,18 @@ namespace ak
 		"DELETE FROM client_phone "
 		"WHERE client_id = "
 		"(SELECT id FROM client "
-		"WHERE first_name = '" + firstName + "' AND last_name = '" + lastName +
-		"');" };
+		"WHERE first_name = $1 AND last_name = $2);" };
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
-		upWork_->exec(str1);
+		upWork_->exec(str1, pqxx::params{ firstName, lastName });
 		upWork_->commit();
 
 		std::string str2{
 			"DELETE FROM phone "
-			"WHERE number = '" + phone + "';" };
+			"WHERE number = $1;" };
 
 		upWork_ = std::make_unique<pqxx::work>(*upConnection_.get());
-		upWork_->exec(str2);
+		upWork_->exec(str2, pqxx::params{ phone });
 		upWork_->commit();
 	}
 
